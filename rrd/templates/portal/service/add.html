@@ -1,0 +1,107 @@
+{% extends "portal/layout.html" %}
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='select2/select2.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select2-bootstrap.css') }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename='select2/select2.min.js') }}"></script>
+
+    <script>
+        function update_service() {
+            $.post(
+                '/portal/service/update',
+                {
+                    'grp_name': $.trim($("#grp_name").val()),
+                    'svs_name': $.trim($("#svs_name").val()),
+                    'service_id': $.trim($("#service_id").val()),
+                    'isflame': $.trim($("#isflame").val()),
+                    'finterval': $.trim($("#finterval").val()),
+                    'fduration': $.trim($("#fduration").val())
+                },
+                function (json) {
+                    handle_quietly(json);
+                }
+            );
+        }
+
+        function on_checked() {
+            var checkbox = document.getElementById("isflame");
+            var duration = document.getElementById("duration");
+            var interval = document.getElementById("interval");
+            if (checkbox.checked == true){
+                document.getElementById("isflame").value = 1;
+                duration.style.display = "block";
+                interval.style.display = "block";
+            }else{
+                document.getElementById("isflame").value = 0;
+                duration.style.display = "none";
+                interval.style.display = "none";
+            }
+        }
+
+    </script>
+
+
+    <input id="service_id" type="hidden" value="{{ data.service.id }}">
+
+    <div style="padding: 20px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">{% if data.service.id %}modify{% else %}add{% endif %} service</div>
+            <div class="panel-body">
+                <div role="form">
+
+                <div class="form-group">
+                    <label for="grp_name">group_name:</label>
+                    <input type="text" placeholder="service.inf.falcon" value="{{ data.service.grp_name }}" class="form-control" id="grp_name">
+                </div>
+
+                <div class="form-group">
+                    <label for="svs_name">service_name:</label>
+                    <input type="text" placeholder="falcon-agent" value="{{ data.service.svs_name}}" class="form-control" id="svs_name">
+                    <span class="help-block"></span>
+                </div>
+
+                <div >
+                    <label for="isflame">是否采集火焰图:</label>
+                    <input type="checkbox" value="{{ data.service.isflame}}" class="form-control" name="isflame" id="isflame"
+                           {% if data.service.isflame == 1 %}checked="checked"{% endif %} onclick="on_checked()">
+                </div>
+
+                <div class="form-group" id="interval"
+                     {% if data.service.isflame == 1 %}style="display:inline"
+                     {% else %}style="display:none"
+                     {% endif %}>
+                    <label for="finterval" >火焰图采集时长:</label>
+                    <input type="text" value="{{ data.service.finterval}}" class="form-control" name="finterval" id="finterval">
+                    <span class="help-block"></span>
+                </div>
+
+                <div class="form-group" id="duration"
+                     {% if data.service.isflame == 1 %}style="display:inline"
+                     {% else %}style="display:none"
+                     {% endif %}>
+                    <label for="fduration">火焰图采集间隔:</label>
+                    <input type="text" value="{{ data.service.fduration}}" class="form-control" name="fduration" id="fduration">
+                    <span class="help-block"></span>
+                </div>
+
+                <div class="mb20">
+                    <button class="btn btn-primary" onclick="update_service();">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Submit
+                    </button>
+                    <a href="{{ url_for('svs_get') }}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span>
+                        Back
+                    </a>
+                </div>
+
+            </div>
+            </div>
+        </div>    
+        <a class="orange" target="_blank" href="https://xxxxx.xxxx.cn/space/doc/doccnJnoMxZ4S0ilK27ZYE#">
+            <span class="glyphicon glyphicon-question-sign"></span>
+            进程监控和火焰图使用说明
+        </a>
+
+    </div>    
+
+{% endblock %}

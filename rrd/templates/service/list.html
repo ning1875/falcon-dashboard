@@ -1,0 +1,74 @@
+{% extends "portal/layout.html" %}
+{% block content %}
+
+    <div class="form-inline" role="form">
+        <div class="form-group">
+            <input type="text" value="{{ data.query }}" class="form-control" id="query"
+                   placeholder="search service name" onkeydown="if(event.keyCode==13)query_service()">
+        </div>
+        <button type="button" onclick="query_service();" class="btn btn-default">
+            <span class="glyphicon glyphicon-search"></span>
+        </button>
+        <input type="checkbox" name="mine" id="mine" {% if data.mine == '1' %}checked="checked"{% endif %}>
+        <span>mine</span>
+
+        <div class="pull-right">
+                        <a href="{{ url_for('service_update_get') }}" class="btn btn-default"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-plus orange"></span>
+                        </a>
+        </div>
+    </div>
+
+    <table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px; margin-top: 10px;">
+        <thead>
+        <tr>
+            <th>group_name</th>
+            <th>service_name</th>
+            <th>bind_user</th>
+            <th>operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for v in data.vs %}
+            <tr>
+                <td>{{ v.grp_name}}</td>
+                <td>{{ v.svs_name }}</td>
+                <td>
+                    <a href="/user/about/{{ v.bind_user }}">{{ v.bind_user }}</a>
+                </td>
+                <td>
+                    {% if v.writable(g.user) %}
+                        <span class="cut-line">¦</span>
+                        <a data-toggle="tooltip" data-placement="top" title="修改" href="{{ url_for('service_update_get', service_id=v.id) }}"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-edit orange"></span>
+                        </a>
+                        <span class="cut-line">¦</span>
+                        <a data-toggle="tooltip" data-placement="top" title="删除" href="javascript:delete_service('{{ v.id }}');"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-trash orange"></span>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% import "portal/blocks.html" as blocks %}
+    {{ blocks.pager('/portal/service?q='+data.query+'&mine='+data.mine, data.total, data.limit, data.page) }}
+
+    <script>
+        $(function () {
+            $("#query").focus();
+            $("#mine").click(query_service);
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+{% endblock %}

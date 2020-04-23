@@ -1,0 +1,89 @@
+{% extends "portal/layout.html" %}
+{% block content %}
+
+    <div class="form-inline" role="form">
+        <div class="form-group">
+            <input type="text" value="{{ data.query }}" class="form-control" id="query"
+                   placeholder="search name" onkeydown="if(event.keyCode==13)query_poly()">
+        </div>
+        <button type="button" onclick="query_poly();" class="btn btn-default">
+            <span class="glyphicon glyphicon-search"></span>
+        </button>
+        <input type="checkbox" name="mine" id="mine" {% if data.mine == '1' %}checked="checked"{% endif %}>
+        <span>mine</span>
+
+        <div class="pull-right">
+                        <a href="{{ url_for('poly_update_get') }}" class="btn btn-default"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-plus orange"></span>
+                        </a>
+        </div>
+    </div>
+
+    <table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px; margin-top: 10px;">
+        <thead>
+        <tr>
+            <th>name</th>
+            <th>type</th>
+            <th>counter</th>
+                        <th>聚合图</th>
+            <th>creator</th>
+
+            <th>create_at</th>
+            <th>operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for v in data.vs %}
+            <tr>
+                <td><a href="/portal/hostgroup?q={{ v.name }}&mine=0&amstag=1" target="_blank">{{ v.name }}</a></td>
+
+                <td>{{ v.poly_type }}</td>
+                  <td>{{ v.counter }}</td>
+                  <td><a href="{{ v.g_url }}" target="_blank">聚合图</a></td>
+                <td>
+                    <a href="/user/about/{{ v.create_user }}">{{ v.create_user }}</a>
+                </td>
+                 <td>{{ v.create_at }}</td>
+                <td>
+{#                    <a data-toggle="tooltip" data-placement="top" title="克隆一份该模板" href="javascript:fork_template('{{ v.id }}');" style="text-decoration: none;">#}
+{#                        <span class="glyphicon glyphicon-duplicate orange"></span>#}
+{#                    </a>#}
+                    {% if v.writable(g.user) %}
+                        <span class="cut-line">¦</span>
+                        <a data-toggle="tooltip" data-placement="top" title="修改" href="{{ url_for('poly_update_get', poly_id=v.id) }}"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-edit orange"></span>
+                        </a>
+                        <span class="cut-line">¦</span>
+                        <a data-toggle="tooltip" data-placement="top" title="删除" href="javascript:delete_poly('{{ v.id }}');"
+                           style="text-decoration: none;">
+                            <span class="glyphicon glyphicon-trash orange"></span>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+            <a class="orange" target="_blank" href="https://xxxxx.xxxx.cn/space/doc/doccn7tK7s96617cvlS6Ss">
+            <span class="glyphicon glyphicon-question-sign"></span>
+            poly_metric用户手册
+        </a>
+    {% import "portal/blocks.html" as blocks %}
+    {{ blocks.pager('/portal/poly?q='+data.query+'&mine='+data.mine, data.total, data.limit, data.page) }}
+
+    <script>
+        $(function () {
+            $("#query").focus();
+            $("#mine").click(query_poly);
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+{% endblock %}

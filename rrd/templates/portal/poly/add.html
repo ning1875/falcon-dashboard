@@ -1,0 +1,115 @@
+{% extends "portal/layout.html" %}
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='select2/select2.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select2-bootstrap.css') }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename='select2/select2.min.js') }}"></script>
+
+    <script>
+        {#function query_poly() {#}
+        {#    var query = $.trim($("#query").val());#}
+        {#    var mine = document.getElementById('mine').checked ? 1 : 0;#}
+        {#    window.location.href = '/portal/poly?q=' + query + '&mine=' + mine;#}
+        {##}
+        function update_poly() {
+            var name = $.trim($("#name").val())
+            var counter = $.trim($("#counter").val())
+
+            {#var name_strs= new Array(); //定义一数组#}
+            {#var counter_strs= new Array(); //定义一数组#}
+            {#name_strs=name.split(/[(\r\n)\r\n]+/); //字符分割#}
+            {#counter_strs=counter.split(/[(\r\n)\r\n]+/); //字符分割#}
+            {#console.log("name",name_strs)#}
+            {#console.log("counter",counter_strs)#}
+
+            {#for (i=0;i<name_strs.length ;i++ )#}
+            {#{#}
+            {#document.write(strs[i]+"<br/>"); //分割后的字符输出#}
+
+            $.post(
+                '/portal/poly/update',
+                {
+                    'name': name,
+                    'poly_type': $.trim($("#poly_type").val()),
+                    'counter': counter,
+                    'poly_id': $.trim($("#poly_id").val())
+                },
+                function (json) {
+                    handle_quietly(json);
+                }
+            );
+        }
+
+    </script>
+
+
+    <input type="hidden" id="poly_id" value="{{ data.poly.id }}">
+
+    <div style="padding: 20px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">{% if data.poly.id %}modify{% else %}add{% endif %} poly</div>
+            <div class="panel-body">
+                <div role="form">
+{##}
+{#                <div class="form-group">#}
+{#                    <label for="name">name:</label>#}
+{#                    <input type="text" placeholder="poly.inf.falcon" value="{{ data.poly.name }}" class="form-control" id="name">#}
+{#                </div>#}
+                <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><label for="name">name:回车换行,多个数据</label></span>
+                      </div>
+                      <textarea class="form-control" aria-label="With textarea" id="name">{{ data.poly.name }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="obj_type">
+                        type选择:
+                    </label>
+                    <a target="_blank" href="http://book.open-falcon.org/zh/usage/poly.html" title="endpoint配置说明">
+                        <span class="glyphicon glyphicon-question-sign" style="float:right;"></span>
+                    </a>
+                    <select class="form-control" id="poly_type" style="vertical-align:top" >
+                    <option value="falcon_group"  {% if data.poly.poly_type == 'falcon_group'  %}selected{% endif %}>falcon_group类型</option>
+                        <option value="ams_tag" disabled {% if data.poly.poly_type == 'ams_tag' %}selected{% endif %}>ams_tag类型</option>
+
+                        <option value="other" disabled {% if data.poly.poly_type == 'other' %}selected{% endif %}>其他</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><label for="name">metric:回车换行,多个数据(默认为下面几个metirc)</label></span>
+                      </div>
+                      <textarea class="form-control" aria-label="With textarea"  id="counter" rows="10" cols="50">{% if data.poly.counter %}{{ data.poly.counter }}{% else %}cpu.busy&#13;mem.memfree&#13;net.if.out.bytes/iface=eth0&#13;df.bytes.used.percent/fstype=ext4,mount=/{% endif %}</textarea>
+                </div>
+{#                <div class="form-group">#}
+{#                    <label for="metric">metric:</label>#}
+{#                    <input type="text" placeholder="agent.alive" value="{{ data.poly.counter }}" class="form-control" id="counter">#}
+{#                    <span class="help-block"></span>#}
+{#                </div>#}
+
+{#                <div style="border-left: 10px solid green; padding-left: 5px;margin-bottom: 10px;">#}
+{#                    <span>数据上报中断时, 补发如下值:</span>#}
+{#                </div>#}
+                <div class="mb20">
+                    <button class="btn btn-primary" onclick="update_poly();">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Submit
+                    </button>
+                    <a href="{{ url_for('polys_get') }}" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left"></span>
+                        Back
+                    </a>
+                </div>
+
+            </div>
+            </div>
+        </div>    
+
+        <a class="orange" target="_blank" href="https://xxxxx.xxxx.cn/space/doc/doccn7tK7s96617cvlS6Ss">
+            <span class="glyphicon glyphicon-question-sign"></span>
+            poly_metric用户手册
+        </a>
+    </div>    
+
+{% endblock %}

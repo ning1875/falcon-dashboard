@@ -1,0 +1,55 @@
+{% extends "portal/layout.html" %}
+{% block content %}
+
+    <div>
+
+        <div class="panel panel-default col-md-4">
+            <div class="panel-heading">
+                同步tag
+                <a target="_blank" href="https://book.open-falcon.org/zh/usage/aggregator.html" title="aggregator{{_('configure help')}}">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
+            </div>
+
+            <div class="panel-body" >
+
+                <div role="form">
+                    <div class="form-group">
+                        <label for="tag_namesa">tag_names：</label>
+                        <textarea rows="4" id="tag_names" class="form-control"></textarea>
+                        <span class="help-block">
+                            多行分隔<br/>
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">region：</label>
+                                <select class="form-control"   id="region" style="vertical-align:top" >
+                        <option value="china"  selected="selected">国内</option>
+
+                        <option value="maliva" >美东</option>
+                    </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="simple">是否全部功能：</label>
+                                <select class="form-control"   id="simple" style="vertical-align:top" >
+                        <option value="1"  selected="selected">主要功能(快速)</option>
+
+                        <option value="0" >全部功能(较慢)</option>
+                    </select>
+                    </div>
+
+                    <button class="btn btn-success" onclick="sync_tag();">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        同步
+                    </button>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
